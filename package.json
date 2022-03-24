@@ -1,0 +1,30 @@
+{
+  "name": "caskstore",
+  "version": "1.0.0",
+  "description": "Backend for CaskStore Application for Mac.",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./src/Main.ts",
+    "run": "ts-node",
+    "starti": "node ./dist/Main.js --experimental-fetch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jonass-K/CaskStore_Backend.git"
+  },
+  "author": "Jonass-K",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jonass-K/CaskStore_Backend/issues"
+  },
+  "homepage": "https://github.com/Jonass-K/CaskStore_Backend#readme",
+  "dependencies": {
+    "@types/node": "^17.0.23",
+    "ts-node": "^10.7.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^3.11.0",
+    "node-fetch": "^2.6.7",
+    "typescript": "^4.7.0-dev.20220323"
+  }
+}
