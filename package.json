@@ -20,11 +20,11 @@
   "homepage": "https://github.com/Jonass-K/CaskStore_Backend#readme",
   "dependencies": {
     "@types/node": "^17.0.23",
-    "ts-node": "^10.7.0"
+    "ts-node": "^10.7.0",
+    "typescript": "^4.7.0-dev.20220323"
   },
   "devDependencies": {
     "@prisma/client": "^3.11.0",
-    "node-fetch": "^2.6.7",
-    "typescript": "^4.7.0-dev.20220323"
+    "node-fetch": "^2.6.7"
   }
 }

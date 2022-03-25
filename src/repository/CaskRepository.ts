@@ -1,10 +1,19 @@
-import { Cask, cask_names, PrismaClient } from '@prisma/client';
+import { Cask, PrismaClient } from '@prisma/client';
 import { CaskFormula } from 'src/model/CaskFormula';
 
+/**
+ * The CaskRepository provides methods to access the cask database.
+ */
 export class CaskRepository {
     static instance = new CaskRepository();
     private prisma = new PrismaClient();
-
+    
+    /**
+     * Creates and returns a new Cask from the given cask formula. The cask is saved to the database.
+     * 
+     * @param caskFormula - The cask formula to create a new cask from
+     * @returns The new cask
+     */
     async newCask(caskFormula: CaskFormula): Promise<Cask> {
         const cask = await this.prisma.cask.create({
             data: {
@@ -27,11 +36,65 @@ export class CaskRepository {
         return cask
     }
 
+    /**
+     * Returns a cask by its name. If the cask is not found in the database, null is returned.
+     * 
+     * @param title - The title of the cask.
+     * @returns The cask or null if not found.
+     */
     async getCask(title: string): Promise<Cask | null> {
         return this.prisma.cask.findFirst({
             where: {
                 title: title
             }
         })
+    }
+
+    /**
+     * Returns the most installed casks of the last 30 days. 
+     * The count is limited by the given take parameter.
+     * 
+     * @param take - The number of casks to return
+     * @returns The most installed casks of the last 30 days
+     */
+    async getTopInstall30Casks(take: number): Promise<Cask[]> {
+        return this.prisma.cask.findMany({
+            orderBy: {
+                install30: 'desc'
+            },
+            take: take
+        });
+    }
+
+    /**
+     * Returns the most installed casks of the last 90 days. 
+     * The count is limited by the given take parameter.
+     * 
+     * @param take - The number of casks to return
+     * @returns The most installed casks of the last 90 days
+     */
+    async getTopInstall90Casks(take: number): Promise<Cask[]> {
+        return this.prisma.cask.findMany({
+            orderBy: {
+                install90: 'desc'
+            },
+            take: take
+        });
+    }
+
+    /**
+     * Returns the most installed casks of the last 365 days. 
+     * The count is limited by the given take parameter.
+     * 
+     * @param take - The number of casks to return
+     * @returns The most installed casks of the last 365 days
+     */
+    async getTopInstall365Casks(take: number): Promise<Cask[]> {
+        return this.prisma.cask.findMany({
+            orderBy: {
+                install365: 'desc'
+            },
+            take: take
+        });
     }
 }

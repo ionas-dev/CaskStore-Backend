@@ -1,34 +1,22 @@
 import { Cask } from "@prisma/client";
-import { CaskFormula } from "../model/CaskFormula";
 import { CaskRepository } from "../repository/CaskRepository";
-const fetch = require('node-fetch');
+import { CaskFormulaRepository } from "../repository/CaskFormulaRepository";
 
+/**
+ * The CaskController provides methods to handle requests to the different data sources and prepare the data for further use.
+ */
 export class CaskController {
     static instance = new CaskController();
     private caskRepository = CaskRepository.instance;
+    private caskFormulaRepository = CaskFormulaRepository.instance;
 
-    async fetchCaskFormula(name: string): Promise<CaskFormula | null> {
-        const url = `https://formulae.brew.sh/api/cask/${name}.json`;
-        const res = await fetch(url);
-
-
-        if (!res.ok) {
-            console.log("Error: Cask not found");
-            return null;
-        }
-
-        const obj = await res.json();
-
-        try {
-            const cask = CaskFormula.fromJson(obj);
-            console.log(`Successfull fetch of '${name}'`)
-            return cask;
-        } catch (e) {
-            console.log(e);
-            return null;
-        }
-    }
-
+    /**
+     * Returns a cask by its name. If the cask is not found in the database, it is fetched from the formula. 
+     * If the no cask formula with the given name is found, null is returned.
+     * 
+     * @param name - The name of the cask.
+     * @returns The cask or null if not found.
+     */
     async getCask(name: string): Promise<Cask | null> {
         const cask = await this.caskRepository.getCask(name);
         
@@ -37,7 +25,7 @@ export class CaskController {
             return cask;
         }
 
-        const formula = await this.fetchCaskFormula(name);
+        const formula = await this.caskFormulaRepository.getCaskFormula(name);
 
         if (formula == null) {
             return null;

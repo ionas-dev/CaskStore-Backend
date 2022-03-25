@@ -1,4 +1,6 @@
-
+/**
+ * The CaskFormula represents a cask formula defined by the brew api.
+ */
 export class CaskFormula {
     title: string;
     name: string;
@@ -10,6 +12,12 @@ export class CaskFormula {
     install90: number;
     install365: number;
 
+    /**
+     * Returns the cask formula created from the given json object.
+     * 
+     * @param json - The json object
+     * @returns The cask formula
+     */
     static fromJson(json: any): CaskFormula {
         let cask = new CaskFormula();
         cask.title = json.token;
