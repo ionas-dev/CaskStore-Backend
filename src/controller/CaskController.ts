@@ -1,6 +1,9 @@
 import { Cask } from "@prisma/client";
 import { CaskRepository } from "../repository/CaskRepository";
 import { CaskFormulaRepository } from "../repository/CaskFormulaRepository";
+import { CaskFormula, Days } from "../model/CaskFormula";
+const pLimit = require("p-limit");
+const limit = pLimit(7);
 
 /**
  * The CaskController provides methods to handle requests to the different data sources and prepare the data for further use.
@@ -19,14 +22,13 @@ export class CaskController {
      */
     async getCask(name: string): Promise<Cask | null> {
         const cask = await this.caskRepository.getCask(name);
-        
+
         if (cask != null) {
             console.log(`Successfull got cask '${name}' from db`);
             return cask;
         }
 
         const formula = await this.caskFormulaRepository.getCaskFormula(name);
-
         if (formula == null) {
             return null;
         }
@@ -34,4 +36,59 @@ export class CaskController {
         console.log(`Create new cask '${name}'`);
         return this.caskRepository.newCask(formula);
     }
+
+    /**
+     * Fetches all casks all cask analytics by the brew api and saves them to the database.
+     * 
+     * @returns True if the database is built, false otherwise.
+     */
+    async buildDatabase(): Promise<Boolean> {
+        const caskFormulas_ = this.caskFormulaRepository.getAllCaskFormulas();
+        const caskFormulasWith30DayAnalytics_ = this.caskFormulaRepository.getAllCaskFormulasWithOnlyAnalytics(Days.THIRTY_DAYS);
+        const caskFormulasWith90DayAnalytics_ = this.caskFormulaRepository.getAllCaskFormulasWithOnlyAnalytics(Days.NINETY_DAYS);
+        const caskFormulasWith365DayAnalytics_ = this.caskFormulaRepository.getAllCaskFormulasWithOnlyAnalytics(Days.YEAR);
+
+        
+        const caskFormulas = await caskFormulas_;
+        if (caskFormulas == null) {
+            return false;
+        }
+
+        console.log(`Count of casks: ${caskFormulas?.length}`);
+        await Promise.all(caskFormulas.map(caskFormula => {
+            return limit(() => this.caskRepository.updateOrNewCask(caskFormula))
+        }));
+        console.log(`Successfull created or updated ${caskFormulas.length} casks`);
+        
+
+        const caskFormulasWith30DayAnalytics = await caskFormulasWith30DayAnalytics_;
+        console.log(`Count of casks with 30 Day analytics: ${caskFormulasWith30DayAnalytics?.length}`);
+        if (caskFormulasWith30DayAnalytics != null) {
+            await Promise.all(caskFormulasWith30DayAnalytics.map(caskFormula => {
+                return limit(() => this.caskRepository.updateCaskAndIgnoreIfNotFound(caskFormula))
+            }));
+        }
+        console.log(`Successfull added 30 days analytics`);
+
+        const caskFormulasWith90DayAnalytics = await caskFormulasWith90DayAnalytics_;
+        console.log(`Count of casks with 90 Day analytics: ${caskFormulasWith90DayAnalytics?.length}`);
+        if (caskFormulasWith90DayAnalytics != null) {
+            await Promise.all(caskFormulasWith90DayAnalytics.map(caskFormula => {
+                return limit(() => this.caskRepository.updateCaskAndIgnoreIfNotFound(caskFormula))
+            }));
+        }
+        console.log(`Successfull added 90 days analytics`);
+
+        const caskFormulasWith365DayAnalytics = await caskFormulasWith365DayAnalytics_;
+        console.log(`Count of casks with 365 Day analytics: ${caskFormulasWith365DayAnalytics?.length}`);
+        if (caskFormulasWith365DayAnalytics != null) {
+            await Promise.all(caskFormulasWith365DayAnalytics.map(caskFormula => {
+                return limit(() => this.caskRepository.updateCaskAndIgnoreIfNotFound(caskFormula))
+            }));
+        }
+        console.log(`Successfull added 365 days analytics`);
+
+        return true;
+    }
+
 }
