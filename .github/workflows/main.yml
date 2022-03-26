@@ -32,9 +32,8 @@ jobs:
       - name: Build Documentation
         run: npx typedoc src/*/*
       
-      # Commits the new doc on branch gh-pages-doc
-      - name: Deploy to GH Page
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+      # Commits the new doc
+      - name: Add & Commit
+        uses: EndBug/add-and-commit@v9.0.0
         with:
-          branch: gh-pages-doc
-          folder: docs
+          add: 'docs'
