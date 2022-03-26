@@ -56,7 +56,7 @@ export class CaskFormulaRepository {
 
         const caskFormulas: CaskFormula[] = objs.map((obj: any) => {
             try {
-                const caskFormula = CaskFormula.fromJsonWithoutAnalytics(obj);
+                const caskFormula = CaskFormula.fromJson(obj);
                 return caskFormula;
             } catch (e) {
                 console.log(e);
@@ -90,7 +90,7 @@ export class CaskFormulaRepository {
 
         for (const obj in objs.formulae) {
             try {
-                const caskFormula = CaskFormula.fromJsonJustAnalytics(objs.formulae[obj][0], days);
+                const caskFormula = CaskFormula.fromAnalyticsJson(objs.formulae[obj][0], days);
                 caskFormulas.push(caskFormula);
             } catch (e) {
                 console.log(e);

@@ -17,64 +17,67 @@ export class CaskFormula {
     }
 
     /**
-     * Returns the cask formula created from the given json object.
+     * Returns the cask formula created from the given json object. 
+     * Analytics are optional.
      * 
      * @param json - The json object
      * @returns The cask formula
      */
-    static fromJson(json: any): CaskFormula {
-        let cask = new CaskFormula(json.token);
-        cask.name = json.name[0];
-        cask.allNames = json.name;
-        cask.desc = json.desc;
-        cask.url = json.url;
-        cask.homepage = json.homepage;
-        cask.install30 = json.analytics.install["30d"][cask.title!];
-        cask.install90 = json.analytics.install["90d"][cask.title!];
-        cask.install365 = json.analytics.install["365d"][cask.title!];
+    static fromJson({ token, name, desc, url, homepage, analytics = undefined }:
+        {
+            token: string,
+            name: string[],
+            desc: string,
+            url: string,
+            homepage: string,
+            analytics?: {
+                install: {
+                    "30d": any,
+                    "90d": any,
+                    "365d": any
+                }
+            } | undefined
+        }
+    ): CaskFormula {
+        let caskFormula = new CaskFormula(token);
+        caskFormula.name = name[0];
+        caskFormula.allNames = name;
+        caskFormula.desc = desc;
+        caskFormula.url = url;
+        caskFormula.homepage = homepage;
 
-        return cask;
-    }
+        if (analytics === undefined) {
+            return caskFormula;
+        }
+        caskFormula.install30 = analytics.install["30d"][token];
+        caskFormula.install90 = analytics.install["90d"][token];
+        caskFormula.install365 = analytics.install["365d"][token];
 
-     /**
-     * Returns the cask formula created from the given json object without analytics.
-     * 
-     * @param json - The json object
-     * @returns The cask formula
-     */
-      static fromJsonWithoutAnalytics(json: any): CaskFormula {
-        let cask = new CaskFormula(json.token);
-        cask.name = json.name[0];
-        cask.allNames = json.name;
-        cask.desc = json.desc;
-        cask.url = json.url;
-        cask.homepage = json.homepage;
-
-        return cask;
+        return caskFormula;
     }
 
     /**
-     * Returns the cask formula created from the given json object wiht only analytics.
+     * Returns the cask formula created from the given json object with only analytics.
      * 
      * @param json - The json object
      * @returns The cask formula
      */
-     static fromJsonJustAnalytics(json: any, days: Days): CaskFormula {
-        let cask = new CaskFormula(json.cask);
-        let count = +(json.count as string).replace(",", "");
+    static fromAnalyticsJson({ cask, count }: { cask: string, count: string }, days: Days): CaskFormula {
+        let caskFormula = new CaskFormula(cask);
+        let countNum = +count.replace(",", "");
         switch (days) {
-            case Days.THIRTY_DAYS: 
-                cask.install30 = count;
+            case Days.THIRTY_DAYS:
+                caskFormula.install30 = countNum;
                 break;
             case Days.NINETY_DAYS:
-                cask.install90 = count;
+                caskFormula.install90 = countNum;
                 break;
             case Days.YEAR:
-                cask.install365 = count;
+                caskFormula.install365 = countNum;
                 break;
         }
-        
-        return cask;
+
+        return caskFormula;
     }
 }
 
