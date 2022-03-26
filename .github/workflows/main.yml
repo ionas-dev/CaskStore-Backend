@@ -30,7 +30,9 @@ jobs:
 
       # Builds the documentation
       - name: Build Documentation
-        run: npx typedoc src/*/*
+        run: |
+          npx prisma generate
+          npx typedoc src/*/* node_modules/@prisma/client/index.d.ts
       
       # Commits the new doc on branch gh-pages-doc
       - name: Deploy to GH Page
