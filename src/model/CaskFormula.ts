@@ -3,14 +3,18 @@
  */
 export class CaskFormula {
     title: string;
-    name: string;
-    allNames: [string];
-    desc: string;
-    homepage: string;
-    url: string;
-    install30: number;
-    install90: number;
-    install365: number;
+    name: string | undefined = undefined;
+    allNames: string[] = [];
+    desc: string | undefined = undefined;
+    homepage: string | undefined = undefined;
+    url: string | undefined = undefined;
+    install30: number | undefined = undefined;
+    install90: number | undefined = undefined;
+    install365: number | undefined = undefined;
+
+    constructor(title: string) {
+        this.title = title;
+    }
 
     /**
      * Returns the cask formula created from the given json object.
@@ -19,8 +23,7 @@ export class CaskFormula {
      * @returns The cask formula
      */
     static fromJson(json: any): CaskFormula {
-        let cask = new CaskFormula();
-        cask.title = json.token;
+        let cask = new CaskFormula(json.token);
         cask.name = json.name[0];
         cask.allNames = json.name;
         cask.desc = json.desc;
