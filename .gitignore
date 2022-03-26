@@ -3,3 +3,4 @@
 prisma/.env
 node_modules
 dist/
+docs/
