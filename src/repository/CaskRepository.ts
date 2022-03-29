@@ -122,6 +122,13 @@ export async function updateCask(caskFormula: CaskFormula): Promise<Cask> {
     })
 }
 
+/**
+ * Adds images to a Cask. The Cask is saved to the database.
+ * 
+ * @param cask - The title of the cask to add the images to
+ * @param imgs - The urls of the images to add
+ * @returns The updated Cask
+ */
 export async function updateCaskWithImages(cask: string, imgs: string[]): Promise<Cask> {
     return prisma.cask.update({
         data: {
