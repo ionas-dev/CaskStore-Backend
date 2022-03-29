@@ -1,7 +1,8 @@
 import { Cask } from "@prisma/client";
 import { CaskRepository } from "../repository/CaskRepository";
 import { CaskFormulaRepository } from "../repository/CaskFormulaRepository";
-import { CaskFormula, Days } from "../model/CaskFormula";
+import { Days } from "../model/CaskFormula";
+import { ImageRepository } from "../repository/ImageRepositry";
 const pLimit = require("p-limit");
 const limit = pLimit(7);
 
@@ -12,6 +13,7 @@ export class CaskController {
     static instance = new CaskController();
     private caskRepository = CaskRepository.instance;
     private caskFormulaRepository = CaskFormulaRepository.instance;
+    private imageRepository = ImageRepository.instance;
 
     /**
      * Returns a cask by its name. If the cask is not found in the database, it is fetched from the formula. 
@@ -37,6 +39,17 @@ export class CaskController {
         return this.caskRepository.newCask(formula);
     }
 
+    async addCaskImage(cask: string, names: string[]): Promise<Boolean> {
+        const image = await this.imageRepository.getCaskImageFromWikipedia([cask].concat(names));
+        if (image == null) {
+            return false;
+        }
+
+        this.caskRepository.updateCaskWithImages(cask, [image]);
+        console.log("moin");
+        return true;
+    }
+
     /**
      * Fetches all casks all cask analytics by the brew api and saves them to the database.
      * 
@@ -54,13 +67,18 @@ export class CaskController {
             return false;
         }
 
-        console.log(`Count of casks: ${caskFormulas?.length}`);
+        await Promise.all(caskFormulas.map(caskFormula => {
+            return limit(() => this.addCaskImage(caskFormula.title, caskFormula.allNames));
+        }));
+
+        
+        console.log(`Fetched: ${caskFormulas?.length} casks`);
         await Promise.all(caskFormulas.map(caskFormula => {
             return limit(() => this.caskRepository.updateOrNewCask(caskFormula))
         }));
-        console.log(`Successfull created or updated ${caskFormulas.length} casks`);
+        console.log(`Successfull created or updated casks`);
         
-
+        
         const caskFormulasWith30DayAnalytics = await caskFormulasWith30DayAnalytics_;
         console.log(`Count of casks with 30 Day analytics: ${caskFormulasWith30DayAnalytics?.length}`);
         if (caskFormulasWith30DayAnalytics != null) {
@@ -90,5 +108,4 @@ export class CaskController {
 
         return true;
     }
-
 }

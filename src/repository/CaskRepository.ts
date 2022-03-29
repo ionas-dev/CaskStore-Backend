@@ -128,6 +128,21 @@ export class CaskRepository {
         })
     }
 
+    async updateCaskWithImages(cask: string, imgs: string[]): Promise<Cask> {
+        return this.prisma.cask.update({
+            data: {
+                cask_image: {
+                    createMany: {
+                        data: imgs.map((img, i) => ({ url: img, title: `${cask} - Image: ${i}`}))
+                    }
+                }
+            },
+            where: {
+                title: cask
+            }
+        });
+    }
+
     async updateCaskAndIgnoreIfNotFound(caskFormula: CaskFormula) {
         return this.prisma.cask.updateMany({
             data: {
