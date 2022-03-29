@@ -1,8 +1,8 @@
 import { Cask } from "@prisma/client";
-import { getCaskFromDB, newCask, updateCaskAndIgnoreIfNotFound, updateCaskWithImages, updateOrNewCask } from "../repository/CaskRepository";
-import { getAllCaskFormulasFromBrew, getAllCaskFormulasWithOnlyAnalyticsFromBrew, getCaskFormulaFromBrew } from "../repository/CaskFormulaRepository";
+import { getCaskFromDB, newCask, updateCaskAndIgnoreIfNotFound, updateCaskWithImages, updateOrNewCask } from "../database/caskDatabase";
+import { getAllCaskFormulasFromBrew, getAllCaskFormulasWithOnlyAnalyticsFromBrew, getCaskFormulaFromBrew } from "../external/extCaskFormula";
 import { Days } from "../model/CaskFormula";
-import { getCaskImageFromWikipedia } from "../repository/ImageRepositry";
+import { getCaskImageFromWikipedia } from "../external/extImage";
 const pLimit = require("p-limit");
 const limit = pLimit(7);
 
