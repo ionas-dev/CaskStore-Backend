@@ -31,7 +31,7 @@ export async function getCask(name: string): Promise<Cask | null> {
 }
 
 /**
- * Trys to find images for the given Cask. 
+ * Tries to find images for the given Cask. 
  * If the images are found, the cask is updated with the images.
  * 
  * @param cask - The title of the cask update.
