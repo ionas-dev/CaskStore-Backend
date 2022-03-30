@@ -31,3 +31,5 @@ jobs:
       run: |
         docker tag caskstore-backend_api caskstore_api
         docker push $DOCKER_HUB_USERNAME/caskstore_api
+      env: 
+        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
