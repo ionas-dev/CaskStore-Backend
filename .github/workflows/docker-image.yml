@@ -29,5 +29,5 @@ jobs:
     
     - name: Push to Docker Hub
       run: |
-        docker tag docker.io/library/caskstore_api caskstore_api
-        docker push $DOCKER_HUB_USERNAME/caskstore_api
+        docker tag caskstore-backend_api:latest caskstore_api:latest
+        docker push $DOCKER_HUB_USERNAME/caskstore_api:latest
