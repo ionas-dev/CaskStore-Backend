@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma db pull
-
 RUN npx prisma generate
 
 ENV PORT=8080

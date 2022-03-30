@@ -4,3 +4,4 @@ node_modules
 dist/
 *.icloud
 docs
+prisma/.env
