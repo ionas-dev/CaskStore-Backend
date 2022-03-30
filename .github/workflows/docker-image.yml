@@ -19,17 +19,18 @@ jobs:
         KEYSTORE_BASE64: ${{ secrets.DATABASE_URL_BASE64 }}
   
     - name: Build the Docker image
-      run: docker-compose build     
-    
-    - name: Set docker hub access token
-      run: echo $DOCKER_HUB_ACCESS_TOKEN > token.txt
-      env: 
-        DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      run: docker-compose build         
       
-    - name: Login and push to docker hub
+    - name: Docker Login
+      uses: docker/login-action@v1.14.1
+      with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+    
+    - name: Push to Docker Hub
       run: |
-        cat token.txt | docker login --username $USERNAME --password-stdin
         docker tag docker.io/library/caskstore_api caskstore_api
         docker push $DOCKER_HUB_USERNAME/caskstore_api
-      env:
-        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
