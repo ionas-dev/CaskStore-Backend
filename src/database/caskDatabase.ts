@@ -145,11 +145,11 @@ export async function updateCaskWithImages(cask: string, imgs: string[]): Promis
 }
 
 /**
- * Trie to update a Cask from the given Cask Formula. The Cask is saved to the database. 
+ * Tries to update a Cask from the given Cask Formula. The Cask is saved to the database. 
  * If The Cask is not fond, it is ignored.
  * 
  * @param caskFormula - The Cask Formula to create a new Cask from
- * @returns The Prisma batchload which holds the count of updated images
+ * @returns The Prisma batch payload which holds the count of updated images
  */
 export async function updateCaskAndIgnoreIfNotFound(caskFormula: CaskFormula): Promise<Prisma.BatchPayload> {
     return prisma.cask.updateMany({
@@ -189,89 +189,55 @@ export async function getCaskFromDB(title: string): Promise<Cask | null> {
 /**
  * Increments the upvote count of the given category to the given cask. If this is the first upvote of the category 
  * for this cast, a new entry in the CaskCategory schema is created.
- * @param caskID Id of the cask
- * @param categoryID Id of the category
- * @returns true if the upvote was successfull and false if the cask or category does not exist
+ * @param caskID - Id of the cask
+ * @param categoryID - Id of the category
+ * @returns True if the upvote was successfull and false if the cask or category does not exist
  */
- export async function upvoteCaskCategory(caskID: number, categoryID: number): Promise<Boolean> {
-    // Check if cask exists
-    const cask: Cask | null  = await prisma.cask.findUnique(
-        {
-            where: {
-                id: caskID
-            }
+export async function upvoteCaskCategory(caskID: number, categoryID: number): Promise<Boolean> {
+    const cask: Cask | null = await prisma.cask.findUnique({
+        where: {
+            id: caskID
         }
-    );
-    // Check if category exists
-    const category: Category | null = await prisma.category.findUnique(
-        {
-            where: {
-                id: categoryID
-            }
+    });
+    const category: Category | null = await prisma.category.findUnique({
+        where: {
+            id: categoryID
         }
-    );
+    });
     if (cask == null || category == null) return false;
 
-    const getResult: CaskCategory = await prisma.caskCategory.upsert(
-        {
-            create: {
-                title: category.title, 
+    prisma.caskCategory.upsert({
+        create: {
+            title: category.title,
+            categoryId: categoryID,
+            caskId: caskID,
+            upvotes: 1
+        },
+        update: {
+            upvotes: { increment: 1 }
+        },
+        where: {
+            categoryId_caskId: {
                 categoryId: categoryID,
-                caskId: caskID,
-                upvotes: 1
-            },
-            update: {
-                upvotes: {increment: 1}
-            },
-            where: {
-                categoryId_caskId: {
-                    categoryId: categoryID,
-                    caskId: caskID
-                }
+                caskId: caskID
             }
         }
-    );
-    console.log(getResult);
-
+    });
     return true;
 }
 
 /**
- * Increments the upvote count of the given image to the given cask.
- * @param caskID id of the cask
- * @param imageID id of the image
- * @returns true if the upvote was successfull and false if the cask or image does not exist
+ * Increments the upvote count of the given image.
+ * @param imageID - Id of the image
+ * @returns The Prisma batch payload which holds the count of updated images
  */
-export async function upvoteCaskImage(caskID: number, imageID: number): Promise<Boolean> {
-    // Check if cask exists
-    const cask: Cask | null  = await prisma.cask.findUnique(
-        {
-            where: {
-                id: caskID
-            }
+export async function upvoteCaskImage(imageID: number): Promise<Prisma.BatchPayload> {
+    return prisma.caskImage.updateMany({
+        data: {
+            upvotes: { increment: 1 }
+        },
+        where: {
+            id: imageID
         }
-    );
-    // Check if image exists
-    const image: CaskImage | null = await prisma.caskImage.findUnique(
-        {
-            where: {
-                id: imageID
-            }
-        }
-    );
-    if (cask == null || image == null) return false;
-
-    const getResult: CaskImage = await prisma.caskImage.update(
-        {
-            where: {
-                id: imageID
-            },
-            data: {
-                upvotes: {increment: 1}
-            }
-        }
-    );
-    console.log(getResult);
-
-    return true;
+    });
 }
