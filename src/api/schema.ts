@@ -1,6 +1,7 @@
-import { resolvers } from "@generated/type-graphql";
+import { FindUniqueCaskResolver, FindFirstCaskResolver, FindManyCaskResolver, CaskRelationsResolver } from "@generated/type-graphql";
 import { GraphQLSchema } from "graphql";
 import { buildSchema } from "type-graphql";
+import { CustomCaskResolver } from "./CustomCaskResolver";
 
 /**
  * Builds a GraphQL schema from the auto generated resolvers.
@@ -8,7 +9,13 @@ import { buildSchema } from "type-graphql";
  */
 export async function schema(): Promise<GraphQLSchema> {
     return buildSchema({
-        resolvers,
+        resolvers: [
+            FindManyCaskResolver,
+            FindFirstCaskResolver,
+            FindUniqueCaskResolver,
+            CaskRelationsResolver,
+            CustomCaskResolver
+        ],
         validate: false
     });
 }

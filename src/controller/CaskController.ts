@@ -38,7 +38,7 @@ export async function getCask(name: string): Promise<Cask | null> {
  * @param searchQuerys - More querys to search for images.
  * @returns true if the cask was updated, false if not.
  */
-export async function addCaskImage(cask: string, searchQuerys: string[]): Promise<Boolean> {
+async function addCaskImage(cask: string, searchQuerys: string[]): Promise<Boolean> {
     const image = await getCaskImageFromWikipedia([cask].concat(searchQuerys));
     if (image == null) {
         return false;
@@ -54,7 +54,7 @@ export async function addCaskImage(cask: string, searchQuerys: string[]): Promis
  * 
  * @returns True if the database is built, false otherwise.
  */
-export async function buildDatabase(): Promise<Boolean> {
+async function buildDatabase(): Promise<Boolean> {
     const caskFormulas_ = getAllCaskFormulasFromBrew();
     const caskFormulasWith30DayAnalytics_ = getAllCaskFormulasWithOnlyAnalyticsFromBrew(Days.THIRTY_DAYS);
     const caskFormulasWith90DayAnalytics_ = getAllCaskFormulasWithOnlyAnalyticsFromBrew(Days.NINETY_DAYS);
