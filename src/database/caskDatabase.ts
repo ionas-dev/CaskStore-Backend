@@ -1,4 +1,4 @@
-import { Cask, Prisma, PrismaClient } from '@prisma/client';
+import { Cask, CaskCategory, CaskImage, Category, Prisma, PrismaClient } from '@prisma/client';
 import { CaskFormula } from 'src/model/CaskFormula';
 const prisma = new PrismaClient();
 
@@ -184,4 +184,94 @@ export async function getCaskFromDB(title: string): Promise<Cask | null> {
             cask_names: true
         }
     })
+}
+
+/**
+ * Increments the upvote count of the given category to the given cask. If this is the first upvote of the category 
+ * for this cast, a new entry in the CaskCategory schema is created.
+ * @param caskID Id of the cask
+ * @param categoryID Id of the category
+ * @returns true if the upvote was successfull and false if the cask or category does not exist
+ */
+ export async function upvoteCaskCategory(caskID: number, categoryID: number): Promise<Boolean> {
+    // Check if cask exists
+    const cask: Cask | null  = await prisma.cask.findUnique(
+        {
+            where: {
+                id: caskID
+            }
+        }
+    );
+    // Check if category exists
+    const category: Category | null = await prisma.category.findUnique(
+        {
+            where: {
+                id: categoryID
+            }
+        }
+    );
+    if (cask == null || category == null) return false;
+
+    const getResult: CaskCategory = await prisma.caskCategory.upsert(
+        {
+            create: {
+                title: category.title, 
+                categoryId: categoryID,
+                caskId: caskID,
+                upvotes: 1
+            },
+            update: {
+                upvotes: {increment: 1}
+            },
+            where: {
+                categoryId_caskId: {
+                    categoryId: categoryID,
+                    caskId: caskID
+                }
+            }
+        }
+    );
+    console.log(getResult);
+
+    return true;
+}
+
+/**
+ * Increments the upvote count of the given image to the given cask.
+ * @param caskID id of the cask
+ * @param imageID id of the image
+ * @returns true if the upvote was successfull and false if the cask or image does not exist
+ */
+export async function upvoteCaskImage(caskID: number, imageID: number): Promise<Boolean> {
+    // Check if cask exists
+    const cask: Cask | null  = await prisma.cask.findUnique(
+        {
+            where: {
+                id: caskID
+            }
+        }
+    );
+    // Check if image exists
+    const image: CaskImage | null = await prisma.caskImage.findUnique(
+        {
+            where: {
+                id: imageID
+            }
+        }
+    );
+    if (cask == null || image == null) return false;
+
+    const getResult: CaskImage = await prisma.caskImage.update(
+        {
+            where: {
+                id: imageID
+            },
+            data: {
+                upvotes: {increment: 1}
+            }
+        }
+    );
+    console.log(getResult);
+
+    return true;
 }
