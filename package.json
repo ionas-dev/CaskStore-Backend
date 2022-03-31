@@ -4,8 +4,8 @@
   "description": "Backend for CaskStore Application for Mac.",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/main.ts",
-    "run": "ts-node"
+    "start": "npx ts-node ./src/main.ts",
+    "run": "npx ts-node"
   },
   "repository": {
     "type": "git",
