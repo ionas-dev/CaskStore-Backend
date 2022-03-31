@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Jonass-K/CaskStore_Backend#readme",
   "dependencies": {
+    "parse-favicon": "^5.0.3",
     "typedoc": "^0.22.13",
     "wtf_wikipedia": "^9.1.0",
     "wtf-plugin-classify": "^1.0.2",
