@@ -2,31 +2,35 @@ const wiki = require('wtf_wikipedia');
 wiki.extend(require('wtf-plugin-image'));
 wiki.extend(require('wtf-plugin-classify'));
 import { parseFavicon } from "parse-favicon";
+import { PrismaClient } from "@prisma/client";
 const fs = require("fs");
 
 
-
-export async function getCaskImageFromHomepage(pageUrl: string, id:number): Promise<string[]> {
-
+/**
+ * Fetches icon URLs of given homepage and returns them in an array
+ * 
+ * @param pageUrl URL of homepage
+ * @param id Cask Id (only for Errors)
+ * @param max Maximum number of icons which should be fetched
+ * @returns Array of icon URLs
+ */
+export async function getCaskImageFromHomepage(pageUrl: string, id: number, max: number): Promise<string[]> {
     if (/^https:\/\/github.com.+$/.test(pageUrl)) {
-        //console.log("Cask has no homepage");
+        console.log("Cask has no homepage");
         return [];
     }
     const result: string[] = [];
-    var gotAppleIcon: number = 0;
     try {
         await parseFavicon(pageUrl, textFetcher, bufferFetcher).forEach(async icon => {
             var iconURL = icon.url;
             if (!/^(http|https):\/\/.+/.test(iconURL)) {
-                if (/.+apple-touch-icon.+/.test(iconURL)) gotAppleIcon++;
                 iconURL = buildURL(pageUrl, icon.url);
             }
-            if (/.+apple-touch-icon.+/.test(iconURL) && gotAppleIcon > 1) return;
-            if (result.length >= 5) return;
+            if (result.length >= max) return;
             result.push(iconURL);
         });
     } catch(error) {
-        fs.appendFileSync("./external/errorUrls.txt", pageUrl + '-' + id + '\n');
+        fs.appendFileSync("./errorUrls.txt", pageUrl + '-' + id + '\n');
     }
 
     async function textFetcher(url: string) {
@@ -44,7 +48,13 @@ export async function getCaskImageFromHomepage(pageUrl: string, id:number): Prom
     return result;
 }
 
-
+/**
+ * Helper function to create URL for icon path
+ * 
+ * @param pageUrl Homepage URL
+ * @param icon Icon path
+ * @returns URL of icon
+ */
 function buildURL(pageUrl: string, icon: string): string {
     const realPageUrl = pageUrl.split('/').splice(0,3).join('/');
     const realIcon = (icon.charAt(0) == '/') ? icon.substring(1,icon.length) : icon;
@@ -83,3 +93,41 @@ export async function getCaskImageFromWikipedia(names: string[]): Promise<string
     }
     return null;
 }
+
+/**
+ * Script for fetching icons of all casks
+ */
+async function addIconsToDatabase() {
+    const prisma = new PrismaClient();
+    var caskCounter = 1;
+    const casks = await prisma.cask.findMany({
+        select: {
+            id: true,
+            title: true,
+            homepage: true
+        }
+    }).then(casks => {
+        casks.forEach(cask => {
+            if (cask.homepage != null) {
+                getCaskImageFromHomepage(cask.homepage, cask.id, 5).then(result => {
+                    if (caskCounter % 200 == 0) console.log("Cask " + caskCounter + " of " + casks.length);
+                    if (result.length > 0) {
+                        result.forEach(imageUrl => {
+                            const result = prisma.caskImage.create({
+                                data: {
+                                    title: cask.title,
+                                    type: 'icon',
+                                    url: imageUrl,
+                                    caskId: cask.id
+                                }
+                            }).then(res => {if (caskCounter % 200 == 0) console.log(res)});
+                        });
+                    }
+                    caskCounter++;
+                });
+            }
+        });
+    });
+}
+
+addIconsToDatabase();

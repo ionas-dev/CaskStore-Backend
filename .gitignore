@@ -4,3 +4,4 @@ prisma/.env
 node_modules
 dist/
 *.icloud
+src/external/errorUrls.txt
