@@ -70,3 +70,6 @@ ALTER TABLE "cask_has_category" ADD CONSTRAINT "fka99h41vi2jr2vbf9azq9" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "cask_image" ADD CONSTRAINT "fkirhzcdrd09_44gnm1g46" FOREIGN KEY ("cask_id") REFERENCES "cask"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddUniqueTitleCaskImages
+ALTER TABLE "cask_image" ADD CONSTRAINT "titleCaskImage" UNIQUE (title);

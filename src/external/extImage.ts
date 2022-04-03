@@ -30,7 +30,7 @@ export async function getCaskImageFromHomepage(pageUrl: string, id: number, max:
             result.push(iconURL);
         });
     } catch(error) {
-        fs.appendFileSync("./errorUrls.txt", pageUrl + '-' + id + '\n');
+        fs.appendFileSync("./src/external/errorUrls.txt", pageUrl + '-' + id + '\n');
     }
 
     async function textFetcher(url: string) {
@@ -105,22 +105,29 @@ async function addIconsToDatabase() {
             id: true,
             title: true,
             homepage: true
-        }
+        },
+        take: 100
     }).then(casks => {
         casks.forEach(cask => {
             if (cask.homepage != null) {
                 getCaskImageFromHomepage(cask.homepage, cask.id, 5).then(result => {
-                    if (caskCounter % 200 == 0) console.log("Cask " + caskCounter + " of " + casks.length);
+                    if (caskCounter % 100 == 0) console.log("Cask " + caskCounter + " of " + casks.length);
+                    if (caskCounter == casks.length) console.log("Done!")
                     if (result.length > 0) {
-                        result.forEach(imageUrl => {
-                            const result = prisma.caskImage.create({
-                                data: {
-                                    title: cask.title,
+                        result.forEach((imageUrl,index) => {
+                            const result = prisma.caskImage.upsert({
+                                create: {
+                                    title: (cask.title + '-Icon:' + index),
                                     type: 'icon',
                                     url: imageUrl,
                                     caskId: cask.id
+                                },
+                                update: {
+                                },
+                                where: {
+                                    title: (cask.title + '-Icon:' + index)
                                 }
-                            }).then(res => {if (caskCounter % 200 == 0) console.log(res)});
+                            }).then();
                         });
                     }
                     caskCounter++;

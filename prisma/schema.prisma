@@ -47,7 +47,7 @@ model CaskCategory {
 
 model CaskImage {
   id        Int       @id @default(autoincrement())
-  title     String?   @db.VarChar
+  title     String?   @unique(map: "titleCaskImage") @db.VarChar
   createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
   type      String?
