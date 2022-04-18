@@ -1,7 +1,10 @@
 .DS_Store
 .vscode/
-node_modules
+node_modules/
 dist/
 *.icloud
-docs
+docs/
 prisma/.env
+.github/
+.git/
+.vscode/

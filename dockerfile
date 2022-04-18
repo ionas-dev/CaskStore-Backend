@@ -1,17 +1,14 @@
 FROM node:17.8
 
+RUN PORT=$PORT
+
 WORKDIR /app
 
-COPY ./package*.json ./
-
+COPY ["./package.json", "./package-lock.json", "./"]
 RUN npm install
 
-COPY . .
+COPY . . 
 
 RUN npx prisma generate
-
-ENV PORT=8080
-
-EXPOSE 8080
 
 CMD ["npm", "start"]
