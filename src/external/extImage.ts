@@ -2,7 +2,7 @@ const wiki = require('wtf_wikipedia');
 wiki.extend(require('wtf-plugin-image'));
 wiki.extend(require('wtf-plugin-classify'));
 import { parseFavicon } from "parse-favicon";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../prisma/generated/client";
 const fs = require("fs");
 
 

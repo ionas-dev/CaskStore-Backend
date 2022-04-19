@@ -1,4 +1,4 @@
-import { Cask, CaskCategory, CaskImage, Category, Prisma, PrismaClient } from '@prisma/client';
+import { Cask, CaskCategory, CaskImage, Category, Prisma, PrismaClient } from '../../prisma/generated/client';
 import { CaskFormula } from 'src/model/CaskFormula';
 const prisma = new PrismaClient();
 

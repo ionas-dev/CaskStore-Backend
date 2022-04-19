@@ -1,4 +1,4 @@
-import { Cask } from "@prisma/client";
+import { Cask } from "../../prisma/generated/client";
 import { getCaskFromDB, newCask, updateCaskAndIgnoreIfNotFound, updateCaskWithImages, updateOrNewCask } from "../database/caskDatabase";
 import { getAllCaskFormulasFromBrew, getAllCaskFormulasWithOnlyAnalyticsFromBrew, getCaskFormulaFromBrew } from "../external/extCaskFormula";
 import { Days } from "../model/CaskFormula";

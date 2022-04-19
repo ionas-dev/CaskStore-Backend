@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Resolver, Query, Arg }  from "type-graphql";
-import { Cask } from "@generated/type-graphql";
+import { Cask } from "../../prisma/generated/type-graphql";
 import { getCask } from "../controller/caskController";
 
 /**
@@ -8,7 +8,7 @@ import { getCask } from "../controller/caskController";
  * If the cask isn't found in the database, the cask will be fetched by the brew api.
  */
 @Resolver()
-export class CustomCaskResolver {
+export default class CustomCaskResolver {
   @Query(() => Cask, { nullable: true })
   async cask(@Arg("title") title: string): Promise<Cask | null> {
     return await getCask(title);
