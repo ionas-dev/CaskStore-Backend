@@ -9,7 +9,7 @@ generator typegraphql {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_WITH_SCHEMA")
+  url      = env("DATABASE_URL")
 }
 
 model Cask {
