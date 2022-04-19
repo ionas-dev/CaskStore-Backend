@@ -6,6 +6,6 @@ import { createContext } from './api/context';
 async function main() {
     const schema = await schema_();
     const server = createServer({ schema, context: createContext });
-    await server.start();
+    server.start();
 }
 main();

@@ -2,9 +2,8 @@
   "name": "caskstore",
   "version": "1.0.0",
   "description": "Backend for CaskStore Application for Mac.",
-  "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/main.ts",
+    "start": "ts-node ./src/index.ts",
     "run": "ts-node"
   },
   "repository": {
